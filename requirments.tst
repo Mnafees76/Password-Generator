@@ -1,4 +1,4 @@
+streamlit
 pyperclip
-streamlit_clipboard
 
 
