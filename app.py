@@ -1,18 +1,14 @@
 import streamlit as st
 import random
 import string
-import pyperclip  # For copying the password to clipboard
+import pyperclip  # type: ignore
 
-# Custom CSS for Light Background Color (Light Blue Gradient)
+# Custom CSS
 st.markdown(
     """
     <style>
-    body {
-        background: linear-gradient(135deg, #c2e9fb, #a1c4fd); /* Light Blue Gradient */
-        color: black; /* Dark text for better visibility */
-    }
     .stApp {
-        background: linear-gradient(135deg, #c2e9fb, #a1c4fd); /* Background for App */
+        background: linear-gradient(135deg, #c2e9fb, #a1c4fd);
         padding: 20px;
         border-radius: 10px;
     }
@@ -22,30 +18,18 @@ st.markdown(
 )
 
 def generate_password(length, use_uppercase, use_lowercase, use_digits, use_special):
-    """
-    Function to generate a random password based on user-selected criteria.
-    :param length: Length of the password
-    :param use_uppercase: Include uppercase letters (A-Z)
-    :param use_lowercase: Include lowercase letters (a-z)
-    :param use_digits: Include numbers (0-9)
-    :param use_special: Include special characters (!@#$%^&*)
-    :return: Generated password as a string
-    """
     characters = ""
-
-    # Add selected character types to the password
     if use_uppercase:
-        characters += string.ascii_uppercase  # A-Z
+        characters += string.ascii_uppercase
     if use_lowercase:
-        characters += string.ascii_lowercase  # a-z
+        characters += string.ascii_lowercase
     if use_digits:
-        characters += string.digits  # 0-9
+        characters += string.digits
     if use_special:
-        characters += string.punctuation  # Special characters (!@#$%^&*)
+        characters += string.punctuation
 
-    # Default to letters if no option is selected
     if not characters:
-        characters = string.ascii_letters  # A-Z, a-z
+        characters = string.ascii_letters  # Default: only letters
 
     return ''.join(random.choice(characters) for _ in range(length))
 
@@ -61,22 +45,21 @@ use_lowercase = st.checkbox("🔡 Include Lowercase (a-z)")
 use_digits = st.checkbox("🔢 Include Numbers (0-9)")
 use_special = st.checkbox("🔣 Include Special Characters (!@#$%^&*)")
 
-password = ""  # Initialize password variable
+# Initialize session state for password
+if "password" not in st.session_state:
+    st.session_state.password = ""
 
 # Generate password when button is clicked
 if st.button("🚀 Generate Password"):
-    password = generate_password(length, use_uppercase, use_lowercase, use_digits, use_special)
-    st.success(f"🛡️ **Generated Password:** `{password}`")
+    st.session_state.password = generate_password(length, use_uppercase, use_lowercase, use_digits, use_special)
+    st.success(f"🛡️ **Generated Password:** `{st.session_state.password}`")
 
-    # Copy password to clipboard
-    if st.button("📋 Copy Password"):
-        pyperclip.copy(password)
-        st.success("✅ Password copied to clipboard!")
+# Copy password to clipboard
+if st.session_state.password and st.button("📋 Copy Password"):
+    pyperclip.copy(st.session_state.password)
+    st.success("✅ Password copied to clipboard!")
 
 # Footer
-st.write("-------------------------------------------------")
-
-# Centered footer text
 st.markdown(
     "<h4 style='text-align: center;'>Made with ❤️ by Muhammad Nafees.</h4>",
     unsafe_allow_html=True
